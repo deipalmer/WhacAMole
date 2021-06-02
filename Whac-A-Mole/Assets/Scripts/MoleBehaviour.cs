@@ -16,7 +16,7 @@ public class MoleBehaviour : MonoBehaviour
     void Awake()
     {
         originalPosition = transform.position;
-        ResetMole(initTimeMin, initTimeMax);
+        ResetMole(initTimeMin, initTimeMax, true);
     }
 
     // Update is called once per frame
@@ -27,7 +27,8 @@ public class MoleBehaviour : MonoBehaviour
             timeToStartMoving -= Time.deltaTime;
             if (timeToStartMoving <= 0.0f && isShown == false)
             {
-                transform.position = originalPosition;
+                //transform.position = originalPosition;
+                LeanTween.move(gameObject, originalPosition, 0.20f);
                 isShown = true;
 
                 timeToStartMoving = Random.Range(3.5f, 7.8f);
@@ -45,16 +46,32 @@ public class MoleBehaviour : MonoBehaviour
 
         ResetMole(initTimeMin, initTimeMax);
     }
-    public void ResetMole(float minTime, float maxTime)
+    public void ResetMole(float minTime, float maxTime, bool force = false)
     {
         moleIsRunning = true;
         isShown = false;
         Vector3 newPos = originalPosition;
         newPos.y -= 1.0f;
-        transform.position = newPos;
+        if (force == true)
+        {
+            transform.position = newPos;
+        }
+        else
+        {
+            LeanTween.move(gameObject, newPos, 0.24f);
+            LeanTween.scale(gameObject, new Vector3(1.4f, 1.0f, 1.4f), 0.12f).setOnComplete(ReScaleToOriginal);
+        }
+        
+
+        //transform.position = newPos;
         timeToStartMoving = Random.Range(minTime, maxTime);
     }
+    private void ReScaleToOriginal()
+    {
 
+        LeanTween.scale(gameObject, new Vector3(1f, 1f, 1f), 0f);
+
+    }
     public void OnHitMole()
     {
         if (isShown == true)

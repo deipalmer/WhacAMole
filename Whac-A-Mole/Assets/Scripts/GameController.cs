@@ -174,7 +174,10 @@ public class GameController : MonoBehaviour
                 if (hitInfo.collider.tag.Equals("Mole"))
                 {
                     MoleBehaviour mole = hitInfo.collider.GetComponent<MoleBehaviour>();
-                    mole.OnHitMole();
+                    if (mole != null)
+                    {
+                        mole.OnHitMole();
+                    }
                 }
             }
         }
@@ -200,5 +203,4 @@ public class GameController : MonoBehaviour
     
     
     }
-
 }
