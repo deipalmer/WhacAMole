@@ -254,6 +254,7 @@ public class GameController : MonoBehaviour
                         for (int i = 0; i < moles.Length; i++)
                         {
                             moles[i].OnHitMole();
+                            points = moles[i].puntosQueDa;
                             clickAcierto++;
                         }
                     }
