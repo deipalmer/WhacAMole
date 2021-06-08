@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class PowerUps : MonoBehaviour
 {
-    bool salir = false;
-    public float numero;
+    public float numero = 200;
     Vector3 posicionInicial;
     int probabilidadBomba = 50;
     int probabilidadTiempoLento = 20;
@@ -23,15 +22,14 @@ public class PowerUps : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //verificamos que el juego ha empezado
         if (timeRunning == true)
         {
+            //calculamos probabilidades
             CalcularProb();
-            salir = true;
-        }
-
-        if (salir == true)
-        {
+            //Aparecen los objetos si se cumplen los requisitos
             AparecerBomba();
+            AparecerTiempoLento();
         }
     }
 
@@ -69,7 +67,7 @@ public class PowerUps : MonoBehaviour
 
     public void HitBomb()
     {
-        LeanTween.scale(bomba,new Vector3(0,0,0) , 0.2f);
+        LeanTween.scale(bomba,new Vector3(0, 0, 0) , 0.2f);
     }
 
     public void HitTiempoLento()

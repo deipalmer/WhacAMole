@@ -81,6 +81,7 @@ public class GameController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //Aqui veremos si el power Up ha sido cogido o no, y haremos una cuenta atras con su duracion
         if (playing == true)
         {
             if (powerUpCogido == true)
@@ -114,7 +115,9 @@ public class GameController : MonoBehaviour
             {
                 
                 CheckClicks();
+                //Aqui mostraremos los puntos en pantalla
                 pointsText.text = MostrarPuntos(points);
+                //Aqui mostraremos el tiempo en pantalla
                 timePlayedText.text = MostarTiempo(timePlayed);
             }
             
@@ -126,12 +129,13 @@ public class GameController : MonoBehaviour
 
     void ShowEndScreen()
     {
-
+        //Calculamos el porcentaje de aciertos al finalizar la partida
         porcentajeAcierto = ((float)clickAcierto / (float)clicks) * 100;
         endScreen.SetActive(true);
 
         bool isRecord = false;
-
+        
+        //Comprobamos si el record es mayor que el anterior, y si lo es lo sustituimos
         if (points > record)
         {
             record = points;
@@ -232,7 +236,9 @@ public class GameController : MonoBehaviour
                     if (mole != null)
                     {
                         mole.OnHitMole();
+                        //Le damos a los topos un valor en su script y los sumamos aqui
                         points += mole.puntosQueDa;
+                        //y añadimos un acierto si se le da a un objeto con el tag Mole
                         clickAcierto++;
                     }
                 }
@@ -242,7 +248,9 @@ public class GameController : MonoBehaviour
                     PowerUps bomb = hitInfo.collider.GetComponent<PowerUps>();
                     if (bomb != null)
                     {
+                        //Hacemos desaparecer el power Up
                         bomb.HitBomb();
+                        //y usamos la funcion OnHitMole junto a un for para que detecte a los topos que estan visibles
                         for (int i = 0; i < moles.Length; i++)
                         {
                             moles[i].OnHitMole();
@@ -253,15 +261,18 @@ public class GameController : MonoBehaviour
 
                 else if (hitInfo.collider.tag.Equals("TiempoLento"))
                 {
-                    PowerUps bomb = hitInfo.collider.GetComponent<PowerUps>();
-                    if (bomb != null)
+                    PowerUps tiempoLento = hitInfo.collider.GetComponent<PowerUps>();
+                    if (tiempoLento != null)
                     {
+                        //Aqui vemos si el power up ha sido cogido
                         powerUpCogido = true;
-                        bomb.HitTiempoLento();
+                        //desaparecemos el power up
+                        tiempoLento.HitTiempoLento();
+                        //y añadimos un acierto
                         clickAcierto++;
                     }
                 }
-
+                //si no se le consigue dar a ninguno de los anteriores objetos contara como un fallo
                 else
                 {
                     failedClicks++;
