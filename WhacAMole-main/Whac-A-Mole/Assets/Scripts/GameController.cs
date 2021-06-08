@@ -20,8 +20,11 @@ public class GameController : MonoBehaviour
 
     public int points = 0;
     public TextMeshProUGUI pointsText;
-    int clicks = 0;
-    int failedClicks = 0;
+    public int record = 0;
+    public int clicks = 0;
+    public int clickAcierto = 0;
+    public float porcentajeAcierto;
+    public int failedClicks = 0;
 
     public TMP_InputField nameField;
     string playerName;
@@ -53,6 +56,8 @@ public class GameController : MonoBehaviour
         //Inicia los puntos
         points = 0;
         clicks = 0;
+        porcentajeAcierto = 0;
+        clickAcierto = 0;
         failedClicks = 0;
 
         //Activa la UI inicial
@@ -83,21 +88,38 @@ public class GameController : MonoBehaviour
             }
             else
             {
+                
                 CheckClicks();
                 pointsText.text = MostrarPuntos(points);
                 timePlayedText.text = MostarTiempo(timePlayed);
             }
             
         }
+
+        
     }
 
 
     void ShowEndScreen()
     {
+
+        porcentajeAcierto = ((float)clickAcierto / (float)clicks) * 100;
         endScreen.SetActive(true);
-        infoGame.text = " Total points : " + "000" + "\n Record: " + "100" + "\n 10" + "% good shots \n" + "999" + " bad shots";
 
         bool isRecord = false;
+
+        if (points > record)
+        {
+            record = points;
+            isRecord = true;
+        }
+
+        else
+        {
+            isRecord = false;
+        }
+
+        infoGame.text = " Total points : " + points.ToString("0000") + "\n Record: " + record.ToString("0000") + "\n"+ porcentajeAcierto.ToString() + " % good shots \n" + failedClicks.ToString("") + " bad shots";
         //si hay nuevo record mostrar el panel recordPanel
         recordPanel.SetActive(isRecord);
     }
@@ -142,6 +164,7 @@ public class GameController : MonoBehaviour
         timePlayed = 0.0f;
         points = 0;
         clicks = 0;
+        clickAcierto = 0;
         failedClicks = 0;
     }
 
@@ -175,6 +198,8 @@ public class GameController : MonoBehaviour
             RaycastHit hitInfo;
             if (Physics.Raycast(rayo, out hitInfo))
             {
+                clicks++;
+
                 if (hitInfo.collider.tag.Equals("Mole"))
                 {
                     MoleBehaviour mole = hitInfo.collider.GetComponent<MoleBehaviour>();
@@ -182,7 +207,13 @@ public class GameController : MonoBehaviour
                     {
                         mole.OnHitMole();
                         AddPoints();
+                        clickAcierto++;
                     }
+                }
+
+                else
+                {
+                    failedClicks++;
                 }
             }
         }
@@ -193,12 +224,15 @@ public class GameController : MonoBehaviour
         mainMenu.SetActive(false);
         inGameUI.SetActive(true);
 
-        points = 0;
         for (int i = 0; i < moles.Length; i++)
         {
             moles[i].ResetMole(moles[i].initTimeMin, moles[i].initTimeMax);
         }
         playing = true;
+        clicks = 0;
+        porcentajeAcierto = 0;
+        failedClicks = 0;
+        points = 0;
     }
 
     void AddPoints()
