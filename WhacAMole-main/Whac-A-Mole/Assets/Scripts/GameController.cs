@@ -16,6 +16,8 @@ public class GameController : MonoBehaviour
 
     public float gameDuration = 60f;
     public float timePlayed;
+    public float tiempoPowerUp = 5f;
+    bool powerUpCogido = false;
     public TextMeshProUGUI timePlayedText;
 
     public int points = 0;
@@ -25,6 +27,9 @@ public class GameController : MonoBehaviour
     public int clickAcierto = 0;
     public float porcentajeAcierto;
     public int failedClicks = 0;
+
+    public Transform powerUpParent;
+    PowerUps[] powerUps;
 
     public TMP_InputField nameField;
     string playerName;
@@ -53,6 +58,12 @@ public class GameController : MonoBehaviour
             moles[i] = molesParent.GetChild(i).GetComponent<MoleBehaviour>();
         }
 
+        powerUps = new PowerUps[powerUpParent.childCount];
+        for (int i = 0; i < powerUpParent.childCount; i++)
+        {
+            powerUps[i] = powerUpParent.GetChild(i).GetComponent<PowerUps>();
+        }
+
         //Inicia los puntos
         points = 0;
         clicks = 0;
@@ -72,7 +83,22 @@ public class GameController : MonoBehaviour
     {
         if (playing == true)
         {
-            timePlayed += Time.deltaTime;
+            if (powerUpCogido == true)
+            {
+                tiempoPowerUp -= Time.deltaTime;
+
+                timePlayed += Time.deltaTime / 3;
+
+                if (tiempoPowerUp <= 0)
+                {
+                    tiempoPowerUp = 0;
+                    timePlayed += Time.deltaTime;
+                }
+            }
+            else
+            {
+                timePlayed += Time.deltaTime;
+            }
 
             if (timePlayed >= gameDuration)
             {
@@ -83,8 +109,6 @@ public class GameController : MonoBehaviour
                 {
                     moles[i].StopMole();
                 }
-
-                
             }
             else
             {
@@ -170,6 +194,8 @@ public class GameController : MonoBehaviour
 
     public void EnterMainScreen()
     {
+        playerName = nameField.text;
+        Debug.Log("Record de " + playerName);
         //Reinicia información del juego
         ResetGame();
         //Cambia las pantallas
@@ -206,7 +232,32 @@ public class GameController : MonoBehaviour
                     if (mole != null)
                     {
                         mole.OnHitMole();
-                        AddPoints();
+                        points += mole.puntosQueDa;
+                        clickAcierto++;
+                    }
+                }
+
+                else if (hitInfo.collider.tag.Equals("Bomba"))
+                {
+                    PowerUps bomb = hitInfo.collider.GetComponent<PowerUps>();
+                    if (bomb != null)
+                    {
+                        bomb.HitBomb();
+                        for (int i = 0; i < moles.Length; i++)
+                        {
+                            moles[i].OnHitMole();
+                            clickAcierto++;
+                        }
+                    }
+                }
+
+                else if (hitInfo.collider.tag.Equals("TiempoLento"))
+                {
+                    PowerUps bomb = hitInfo.collider.GetComponent<PowerUps>();
+                    if (bomb != null)
+                    {
+                        powerUpCogido = true;
+                        bomb.HitTiempoLento();
                         clickAcierto++;
                     }
                 }
@@ -228,16 +279,17 @@ public class GameController : MonoBehaviour
         {
             moles[i].ResetMole(moles[i].initTimeMin, moles[i].initTimeMax);
         }
-        playing = true;
-        clicks = 0;
-        porcentajeAcierto = 0;
-        failedClicks = 0;
-        points = 0;
-    }
 
-    void AddPoints()
-    {
-        points += 100;
+        for (int i = 0; i < powerUps.Length; i++)
+        {
+            powerUps[i].TimeRunning();
+        }
+
+        playing = true;
+        clicks = -1;
+        porcentajeAcierto = 0;
+        failedClicks = -1;
+        points = 0;
     }
     /// <summary>
     /// Funcion para entrar en pausa, pone playing en false y muestra la pantalla de pausa.

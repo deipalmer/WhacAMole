@@ -10,6 +10,9 @@ public class MoleBehaviour : MonoBehaviour
     public float initTimeMin = 0.5f;
     public float initTimeMax = 3.5f;
     private bool moleIsRunning = true;
+    public int puntosQueDa = 100;
+
+    public float tiempoMostrado;
 
 
     // Start is called before the first frame update
@@ -37,6 +40,11 @@ public class MoleBehaviour : MonoBehaviour
             {
                 ResetMole(3.5f, 7.8f);
             }
+        }
+
+        if (isShown == true)
+        {
+            tiempoMostrado += Time.deltaTime;
         }
        
     }
