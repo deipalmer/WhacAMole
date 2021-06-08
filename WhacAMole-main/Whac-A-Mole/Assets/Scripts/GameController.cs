@@ -7,7 +7,7 @@ using TMPro;
 public class GameController : MonoBehaviour
 {
     public static GameController instance;
-    public GameObject mainMenu, inGameUI,endScreen,recordPanel;
+    public GameObject mainMenu, inGameUI, endScreen, recordPanel;
 
     public Transform molesParent;
     private MoleBehaviour[] moles;
@@ -16,8 +16,10 @@ public class GameController : MonoBehaviour
 
     public float gameDuration = 60f;
     public float timePlayed;
+    public TextMeshProUGUI timePlayedText;
 
     public int points = 0;
+    public TextMeshProUGUI pointsText;
     int clicks = 0;
     int failedClicks = 0;
 
@@ -82,6 +84,8 @@ public class GameController : MonoBehaviour
             else
             {
                 CheckClicks();
+                pointsText.text = MostrarPuntos(points);
+                timePlayedText.text = MostarTiempo(timePlayed);
             }
             
         }
@@ -188,6 +192,7 @@ public class GameController : MonoBehaviour
     {
         mainMenu.SetActive(false);
         inGameUI.SetActive(true);
+
         points = 0;
         for (int i = 0; i < moles.Length; i++)
         {
@@ -207,5 +212,18 @@ public class GameController : MonoBehaviour
     { 
     
     
+    }
+
+    public string MostrarPuntos(int puntuacion)
+    {
+        return puntuacion.ToString("0000");
+    }
+
+    public string MostarTiempo(float tiempo)
+    {
+        int minutos = (int)tiempo / 60;
+        int segundos = (int)tiempo % 60;
+
+        return minutos.ToString("00") + (":") + segundos.ToString("00");
     }
 }
